@@ -8,49 +8,54 @@
 //instantiation of non drivetrain vex devices here
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::Imu imu(18);
+pros::Imu imu(19);
 
 //insatntiate PROS and Lemlib objects
 
+pros::Rotation verticalEncoder(17);
+pros::Rotation horizontalEncoder(18);
+
+lemlib::TrackingWheel vertical(&verticalEncoder, lemlib::Omniwheel::NEW_2, -1.283);
+lemlib::TrackingWheel horizontal(&horizontalEncoder, lemlib::Omniwheel::NEW_2, -4.680);
 
 pros::MotorGroup leftDrive({1, -2, 3, -4, 5}, pros::MotorGearset::blue);
-pros::MotorGroup rightDrive({6, -7, 8, -9, 10}, pros::MotorGearset::blue);
+pros::MotorGroup rightDrive({-6, 7, -8, 9, -10}, pros::MotorGearset::blue);
 
-lemlib::Drivetrain drivetrain(&leftDrive, // left motor group
+lemlib::Drivetrain drivetrain(&leftDrive, // left motor groupx  
                               &rightDrive, // right motor group
-                              11.75, // 10 inch track width
+                              10, // 10 inch track width
                               lemlib::Omniwheel::NEW_325, // using new 4" omnis
-                              360, // drivetrain rpm is 3
+                              600, // drivetrain rpm is 3
                               2 // horizontal drift is 2 (for now)
 );
 
 
-lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
-                            nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            nullptr, // horizontal tracking wheel 1
-                            nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
-                            &imu // inertial sensor
+lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel 1
+                            nullptr,   // vertical tracking wheel 2
+                            &horizontal, // horizontal tracking wheel 1
+                            nullptr,   // horizontal tracking wheel 2
+                            &imu       // inertial sensor
 );
 
-lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(0, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              3, // derivative gain (kD)
-                                              3, // anti windup
-                                              1, // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
-                                              20 // maximum acceleration (slew)
+                                              0, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in inches
+                                              0, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(4, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              10, // derivative gain (kD)
-                                              3, // anti windup
-                                              1, // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
+                                              16, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in inches
+                                              0, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
 
@@ -77,6 +82,8 @@ void initialize() {
 
     //hardware intialization
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    pros::lcd::initialize();
+    chassis.calibrate();
 
     //task creation
 
@@ -129,22 +136,25 @@ static pros::Task doorTask (
     TASK_STACK_DEPTH_DEFAULT,
     "doorTask");
 
+static pros::Task descoreWingTask (
+    descoreWingCallback,
+    (void*)"PROS",
+    TASK_PRIORITY_DEFAULT,
+    TASK_STACK_DEPTH_DEFAULT,
+    "descoreWingTask");
+
 //sensor data output loop
-/*
+static pros::Task sensorOutputTask([]() {
+    
+    while (true) {
+        pros::lcd::print(0, "X: %f", chassis.getPose().x);
+        pros::lcd::print(1, "Y: %f", chassis.getPose().y);
+        pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
+        pros::delay(20);
+    }
+});
 
-    pros::lcd::initialize(); // initialize brain screen
-    chassis.calibrate();
-        while (true) {
-            // print robot location to the brain screen
-            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-            // delay to save resources
-            pros::delay(20);
-        }
-*/
-
-    showLogoFlag.store(true);
+    //showLogoFlag.store(true);
 
 }
 
@@ -167,8 +177,8 @@ void disabled() {}
 
 void competition_initialize() {
 
-    showLogoFlag.store(false);
-    selectorButtons();
+    //showLogoFlag.store(false);
+    //selectorButtons();
 
 }
 
@@ -184,16 +194,16 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-            /*
-            leftIntake.move_voltage(12000);
-            rightIntake.move_voltage(12000);
-            pros::delay(1000);
-            leftIntake.move_velocity(0);
-            rightIntake.move_velocity(0);
+/*
+        intakeFlag.store(true);
+        liftFlag.store(true);
+        loaderFlag.store(true);
+        doorFlag.store(true);
+        descoreWingFlag.store(true);
 
-            //chassis.follow(leftpathV1_txt, 15, 20000);
-            */
-
+        chassis.setPose(0,0,0);
+        chassis.turnToHeading(90, 100000);
+*/
     }
 
 /**
@@ -212,16 +222,16 @@ void autonomous() {
 
 void opcontrol() {
 
-    showLogoFlag.store(true);
-
-    //enable tasks
-    controllerAnalogFlag.store(true);
-    controllerDigitalFlag.store(true);
+    //chassis.setPose(0,0,0);
+    //chassis.turnToHeading(90, 100000);
     intakeFlag.store(true);
     liftFlag.store(true);
     loaderFlag.store(true);
     doorFlag.store(true);
-
+    descoreWingFlag.store(true);
+    controllerAnalogFlag.store(true);
+    controllerDigitalFlag.store(true);
+    
 
     while (true) {
 

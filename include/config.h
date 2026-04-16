@@ -9,3 +9,4 @@
 #include "UI.h"
 #include "lvglTimer.h"
 #include "bulldog.h"
+#include "auton.h"

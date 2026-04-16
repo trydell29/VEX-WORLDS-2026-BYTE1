@@ -46,6 +46,11 @@ void controllerDigitalChecker(void* param){
             loaderState.store(!loaderState.load());
         }
 
+        //descoreWing functionality
+        if (master.get_digital_new_press(DIGITAL_RIGHT)){
+            descoreWingState.store(!descoreWingState.load());
+        }
+
     }
     pros::delay(25);
 }

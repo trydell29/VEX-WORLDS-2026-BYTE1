@@ -11,7 +11,7 @@ void controllerAnalogChecker(void* param){
             int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
             // move the robot
-            chassis.arcade(rightX, leftY, false, 0.35);
+            chassis.arcade(leftY, rightX, false, 0.35);
 
         pros::delay(25);
     }

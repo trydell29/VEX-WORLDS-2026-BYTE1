@@ -15,42 +15,69 @@ pros::Motor ml4(-14, pros::MotorGearset::blue);
 pros::Motor ml5(15, pros::MotorGearset::red);
 pros::Motor ml6(-16, pros::MotorGearset::blue);
 
+void runIntake(){
+    ml1.move_voltage(12000);
+    ml2.move_voltage(12000);
+    ml3.move_voltage(12000);
+    ml4.move_voltage(12000);
+    ml5.move_voltage(12000);
+    ml6.move_voltage(12000);
+    doorSolenoid.set_value(false);
+}
+
+void runIntakeSpit(){
+    ml1.move_voltage(-12000);
+    ml2.move_voltage(-12000);
+    ml3.move_voltage(-12000);
+    ml4.move_voltage(-12000);
+    ml5.move_voltage(-12000);
+    ml6.move_voltage(-12000);
+    doorSolenoid.set_value(false);
+}
+
+void runOuttake(){
+    ml1.move_voltage(12000);
+    ml2.move_voltage(12000);
+    ml3.move_voltage(12000);
+    ml4.move_voltage(12000);
+    ml5.move_voltage(12000);
+    ml6.move_voltage(12000);
+    doorSolenoid.set_value(true);
+}
+
+void stopIndexer(){
+    ml1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    ml2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    ml3.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    ml4.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    ml5.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    ml6.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    ml1.move_voltage(0);
+    ml2.move_voltage(0);
+    ml3.move_voltage(0);
+    ml4.move_voltage(0);
+    ml5.move_voltage(0);
+    ml6.move_voltage(0);
+    doorSolenoid.set_value(false);
+}
+
 void intakeCallback(void* param){
     while (true){
         if (intakeFlag.load()){
-            if (intakeRunning.load() && !intakeSpitRunning.load()){
-                ml1.move_voltage(12000);
-                ml2.move_voltage(12000);
-                ml3.move_voltage(12000);
-                ml4.move_voltage(12000);
-                ml5.move_voltage(12000);
-                ml6.move_voltage(12000);
+            if ((intakeRunning.load() && intakeSpitRunning.load()) || (intakeRunning.load() && outtakeRunning.load()) || (intakeSpitRunning.load() && outtakeRunning.load())){
+                stopIndexer();
             }
-            if (intakeSpitRunning.load() && !intakeRunning.load()){
-                ml1.move_voltage(-12000);
-                ml2.move_voltage(-12000);
-                ml3.move_voltage(-12000);
-                ml4.move_voltage(-12000);
-                ml5.move_voltage(-12000);
-                ml6.move_voltage(-12000);
+            else if (intakeRunning.load()){
+                runIntake();
             }
-            if ((!intakeRunning.load() && !intakeSpitRunning.load()) || (intakeRunning.load() && intakeSpitRunning.load())){
-                ml1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-                ml2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-                ml3.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-                ml4.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-                ml5.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-                ml6.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-                ml1.move_velocity(0);
-                ml2.move_voltage(0);
-                ml3.move_voltage(0);
-                ml4.move_velocity(0);
-                ml5.move_voltage(0);
-                ml6.move_voltage(0);
+            else if (intakeSpitRunning.load()){
+                runIntakeSpit();
             }
-            if (outtakeRunning.load()){
+            else if (outtakeRunning.load()){
+                runOuttake();
             }
-            if ((!outtakeRunning.load())){
+            else {
+                stopIndexer();
             }
         }
         pros::delay(25);

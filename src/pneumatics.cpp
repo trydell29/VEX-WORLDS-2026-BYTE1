@@ -4,12 +4,15 @@ std::atomic<bool> liftState{false};
 std::atomic<bool> liftFlag{false};
 std::atomic<bool> loaderState{false}; 
 std::atomic<bool> loaderFlag{false};
-std::atomic<bool> doorState{false}; 
+std::atomic<bool> doorState{false};
 std::atomic<bool> doorFlag{false};
+std::atomic<bool> descoreWingState{false};
+std::atomic<bool> descoreWingFlag{false};
 
-pros::ADIDigitalOut liftSolenoid('A');
-pros::ADIDigitalOut loaderSolenoid('B');
-pros::ADIDigitalOut doorSolenoid('C');
+pros::adi::DigitalOut liftSolenoid('A');
+pros::adi::DigitalOut loaderSolenoid('B');
+pros::adi::DigitalOut doorSolenoid('C');
+pros::adi::DigitalOut descoreWingSolenoid('D');
 
 void liftCallback(void* param){
     while (true){
@@ -48,6 +51,20 @@ void doorCallback(void* param){
         }
         if (doorState == false){
             doorSolenoid.set_value(false);
+        }
+        }
+        pros::delay(25);
+    }
+}
+
+void descoreWingCallback(void* param){
+    while (true){
+        if (descoreWingFlag.load()){
+        if (descoreWingState == true){
+            descoreWingSolenoid.set_value(true);
+        }
+        if (descoreWingState == false){
+            descoreWingSolenoid.set_value(false);
         }
         }
         pros::delay(25);
