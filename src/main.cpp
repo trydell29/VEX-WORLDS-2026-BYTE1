@@ -194,17 +194,21 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-/*
+
         intakeFlag.store(true);
         liftFlag.store(true);
         loaderFlag.store(true);
         doorFlag.store(true);
         descoreWingFlag.store(true);
+        controllerAnalogFlag.store(false);
+        controllerDigitalFlag.store(false);
 
         chassis.setPose(0,0,0);
         chassis.turnToHeading(90, 100000);
-*/
+
     }
+
+    
 
 /**
  * Runs the operator control code. This function will be started in its own task
