@@ -12,7 +12,7 @@ pros::Imu imu(19);
 
 //insatntiate PROS and Lemlib objects
 
-pros::Rotation verticalEncoder(17);
+pros::Rotation verticalEncoder(-17);
 pros::Rotation horizontalEncoder(18);
 
 lemlib::TrackingWheel vertical(&verticalEncoder, lemlib::Omniwheel::NEW_2, -1.283);
@@ -37,25 +37,25 @@ lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel 1
                             &imu       // inertial sensor
 );
 
-lemlib::ControllerSettings lateral_controller(0, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(9, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              0, // derivative gain (kD)
+                                              10, // derivative gain (kD)
                                               0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angular_controller(4, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(9, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              16, // derivative gain (kD)
+                                              38, // derivative gain (kD)
                                               0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
 
@@ -203,8 +203,7 @@ void autonomous() {
         controllerAnalogFlag.store(false);
         controllerDigitalFlag.store(false);
 
-        chassis.setPose(0,0,0);
-        chassis.turnToHeading(90, 100000);
+        rightAuton();
 
     }
 
@@ -225,16 +224,7 @@ void autonomous() {
  */
 
 void opcontrol() {
-
-    //chassis.setPose(0,0,0);
-    //chassis.turnToHeading(90, 100000);
-    intakeFlag.store(true);
-    liftFlag.store(true);
-    loaderFlag.store(true);
-    doorFlag.store(true);
-    descoreWingFlag.store(true);
-    controllerAnalogFlag.store(true);
-    controllerDigitalFlag.store(true);
+    autonomous();
     
 
     while (true) {
