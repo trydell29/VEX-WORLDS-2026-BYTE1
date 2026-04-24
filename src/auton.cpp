@@ -3,7 +3,7 @@
 
 lemlib::Pose rightStartPose(-46.345, -14.4625, 90);
 lemlib::Pose leftStartPose(-46.345, 14.4625, 90);
-lemlib::Pose rightLongGoalPose(-24.395, -47.5, 90);
+lemlib::Pose rightLongGoalPose(-24.395, -48, 90);
 lemlib::Pose leftLongGoalPose(-24.395, 47.125, 90);
 lemlib::Pose midGoalPose(-7.990, 7.990, 45);
 lemlib::Pose lowGoalPose(-7.990, -7.990, -45);

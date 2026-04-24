@@ -37,9 +37,9 @@ lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel 1
                             &imu       // inertial sensor
 );
 
-lemlib::ControllerSettings lateral_controller(9, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(16, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              10, // derivative gain (kD)
+                                              40, // derivative gain (kD)
                                               0, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -48,14 +48,14 @@ lemlib::ControllerSettings lateral_controller(9, // proportional gain (kP)
                                               0 // maximum acceleration (slew)
 );
 
-lemlib::ControllerSettings angular_controller(9, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(7, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              38, // derivative gain (kD)
+                                              25, // derivative gain (kD)
                                               0, // anti windup
-                                              1, // small error range, in inches
+                                              1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
+                                              3, // large error range, in degrees
+                                              500, // large error range timeout disabled
                                               0 // maximum acceleration (slew)
 );
 
@@ -203,7 +203,12 @@ void autonomous() {
         controllerAnalogFlag.store(false);
         controllerDigitalFlag.store(false);
 
-        rightAuton();
+   chassis.setPose(0, 0, 0);
+    
+    // Drive to (24, 24) ending facing 90° (to the right)
+    chassis.moveToPose(24, 24, 90, 4000);
+
+        //rightAuton();
 
     }
 
@@ -225,7 +230,6 @@ void autonomous() {
 
 void opcontrol() {
     autonomous();
-    
 
     while (true) {
 
