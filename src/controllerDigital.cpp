@@ -15,22 +15,22 @@ void controllerDigitalChecker(void* param){
         if (master.get_digital_new_release(DIGITAL_R1)){
             intakeRunning.store(false);
         }
-        if (master.get_digital_new_press(DIGITAL_R2)){
+        if (master.get_digital_new_press(DIGITAL_L1)){
             if (!intakeSpitRunning.load()){
                 intakeSpitRunning.store(true);
             }
         }
-        if (master.get_digital_new_release(DIGITAL_R2)){
+        if (master.get_digital_new_release(DIGITAL_L1)){
             intakeSpitRunning.store(false);
         }
 
-        if (master.get_digital_new_press(DIGITAL_L1)){
+        if (master.get_digital_new_press(DIGITAL_R2)){
             if (!outtakeRunning.load()){
                 outtakeRunning.store(true);
                 doorState.store(true);
             }
         }
-        if (master.get_digital_new_release(DIGITAL_L1)){
+        if (master.get_digital_new_release(DIGITAL_R2)){
             outtakeRunning.store(false);
             doorState.store(false);
         }   
@@ -42,12 +42,12 @@ void controllerDigitalChecker(void* param){
         }
 
         //loader functionality
-        if (master.get_digital_new_press(DIGITAL_DOWN)){
+        if (master.get_digital_new_press(DIGITAL_UP)){
             loaderState.store(!loaderState.load());
         }
 
         //descoreWing functionality
-        if (master.get_digital_new_press(DIGITAL_RIGHT)){
+        if (master.get_digital_new_press(DIGITAL_X)){
             descoreWingState.store(!descoreWingState.load());
         }
 

@@ -144,7 +144,7 @@ static pros::Task descoreWingTask (
     "descoreWingTask");
 
 //sensor data output loop
-static pros::Task sensorOutputTask([]() {
+/*static pros::Task sensorOutputTask([]() {
     
     while (true) {
         pros::lcd::print(0, "X: %f", chassis.getPose().x);
@@ -152,7 +152,7 @@ static pros::Task sensorOutputTask([]() {
         pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
         pros::delay(20);
     }
-});
+});*/
 
     //showLogoFlag.store(true);
 
@@ -178,7 +178,7 @@ void disabled() {}
 void competition_initialize() {
 
     //showLogoFlag.store(false);
-    //selectorButtons();
+    selectorButtons();
 
 }
 
@@ -203,12 +203,8 @@ void autonomous() {
         controllerAnalogFlag.store(false);
         controllerDigitalFlag.store(false);
 
-   chassis.setPose(0, 0, 0);
-    
-    // Drive to (24, 24) ending facing 90° (to the right)
-    chassis.moveToPose(24, 24, 90, 4000);
 
-        //rightAuton();
+        rightAuton();
 
     }
 
@@ -229,7 +225,9 @@ void autonomous() {
  */
 
 void opcontrol() {
-    autonomous();
+    
+    controllerAnalogFlag.store(true);
+    controllerDigitalFlag.store(true);
 
     while (true) {
 
